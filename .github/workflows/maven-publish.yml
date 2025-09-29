@@ -5,29 +5,30 @@ name: Maven Package
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]      # 按需改
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write           # 关键：允许写入 GitHub Packages
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        server-username: ${{ github.actor }}       # 写入 settings.xml 的用户名
-        server-password: ${{ secrets.GITHUB_TOKEN }} # 写入 settings.xml 的密码
-        settings-path: ${{ github.workspace }}     # 生成 settings.xml 的目录
+      - uses: actions/checkout@v4
 
-    - name: Build & Deploy to GitHub Packages
-      run: mvn -B -U -s ${{ github.workspace }}/settings.xml deploy
+      - name: Set up JDK 17 (write creds to ~/.m2/settings.xml)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          server-id: github                        # 与 POM 的 <id> 完全一致
+          server-username: ${{ github.actor }}     # 会写入 settings.xml
+          server-password: ${{ secrets.GITHUB_TOKEN }}  # 会写入 settings.xml
+          # 注意：这里**不要**写 settings-path，这样就会写到默认 ~/.m2/settings.xml
+
+      - name: Build & Deploy to GitHub Packages
+        run: mvn -B -U deploy                      # 不需要 -s 了
 
