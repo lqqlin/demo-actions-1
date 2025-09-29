@@ -50,5 +50,17 @@
 			</plugin>
 		</plugins>
 	</build>
+	<distributionManagement>
+	  <repository>
+	    <id>github</id>
+	    <url>https://maven.pkg.github.com/lqqlin/demo-actions-1</url>
+	  </repository>
+	  <!-- 若使用 -SNAPSHOT 版本，也可以同样配置 snapshotRepository（可选）
+	  <snapshotRepository>
+	    <id>github</id>
+	    <url>https://maven.pkg.github.com/lqqlin/demo-actions-1</url>
+	  </snapshotRepository>
+	  -->
+	</distributionManagement>
 
 </project>

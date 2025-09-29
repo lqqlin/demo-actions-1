@@ -24,12 +24,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+        server-username: ${{ github.actor }}       # 写入 settings.xml 的用户名
+        server-password: ${{ secrets.GITHUB_TOKEN }} # 写入 settings.xml 的密码
+        settings-path: ${{ github.workspace }}     # 生成 settings.xml 的目录
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+    - name: Build & Deploy to GitHub Packages
+      run: mvn -B -U -s ${{ github.workspace }}/settings.xml deploy
 
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
